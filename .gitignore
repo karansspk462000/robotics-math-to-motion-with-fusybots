@@ -1,0 +1,27 @@
+# Build artifacts (colcon)
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.pyc
+
+# ROS bags
+*.bag
+*.db3
+*.db3-*
+rosbag2_*/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# vla_manipulator - separate project, not part of this workspace's robots yet
+src/robot_description/meshes/vla_manipulator/
+src/robot_description/urdf/vla_manipulator.urdf.xacro
+src/robot_config/config/robots/vla_manipulator.yaml
+src/mujoco_digital_twin/mujoco_digital_twin/models/vla_manipulator.xml

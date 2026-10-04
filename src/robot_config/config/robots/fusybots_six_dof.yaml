@@ -1,0 +1,75 @@
+# Low-level description for the Fusybots six-DOF robot defined in
+# robot_description/urdf/fusybots_six_dof.urdf.xacro (joints j1-j6).
+#
+# Joint position limits below are taken directly from that URDF. It does not
+# specify velocity/effort limits (they're 0.0, i.e. unmodeled), so the
+# values here are placeholders pending real actuator specs - update them
+# before running any real trajectory through this config.
+name: "fusybots_six_dof"
+num_joints: 6
+dof: 6
+
+# Default pose reported before any command is sent and used by "Send Home"
+# in robot_ui - see fusybots_six_dof_spherical_wrist.yaml for why this isn't all-zero
+# (j3=0, elbow fully straight, is the real singularity here, verified by
+# search on that robot's identical l1-l6 geometry; this yaml's only
+# difference is the l7 wrist offset, which doesn't change the elbow
+# analysis, but this exact pose has not been re-verified against this
+# robot's own IK).
+home_joint_position: [0.0, 1.3, 0.8, 0.0, -1.2, 0.0]
+
+joints:
+  - name: "j1"                # must match fusybots_six_dof.urdf.xacro's joint names -
+    position_min: -6.28318    # the RViz joint-state bridge publishes these
+    position_max: 6.28318     # verbatim as sensor_msgs/JointState.name
+    velocity_max: 1.0        # placeholder, URDF does not specify
+    effort_max: 50.0         # placeholder, URDF does not specify
+    pid: {p: 10.0, i: 0.0, d: 1.0}
+  - name: "j2"
+    position_min: -1.5708    # j2: -pi/2 .. pi/2
+    position_max: 1.5708
+    velocity_max: 1.0
+    effort_max: 50.0
+    pid: {p: 10.0, i: 0.0, d: 1.0}
+  - name: "j3"
+    position_min: -1.5708    # j3: -pi/2 .. pi/2
+    position_max: 1.5708
+    velocity_max: 1.0
+    effort_max: 50.0
+    pid: {p: 10.0, i: 0.0, d: 1.0}
+  - name: "j4"
+    position_min: -1.5708    # j4: -pi/2 .. pi/2
+    position_max: 1.5708
+    velocity_max: 1.0
+    effort_max: 30.0
+    pid: {p: 8.0, i: 0.0, d: 0.5}
+  - name: "j5"
+    position_min: -3.14159   # j5: -pi .. pi
+    position_max: 3.14159
+    velocity_max: 1.0
+    effort_max: 20.0
+    pid: {p: 8.0, i: 0.0, d: 0.5}
+  - name: "j6"
+    position_min: -6.28318   # j6: -2*pi .. 2*pi
+    position_max: 6.28318
+    velocity_max: 1.0
+    effort_max: 10.0
+    pid: {p: 5.0, i: 0.0, d: 0.2}
+
+# kinematics holds parameters for whichever kinematics_method/ik_method
+# system_config.yaml selects (the factory only reads the keys its chosen
+# method needs):
+#   - urdf_path/start_link/end_link: for kinematics_method/ik_method "kdl" -
+#     builds FK/IK directly from the URDF via kdl_parser, no manual DH
+#     derivation, robust to this chain's non-axis-aligned fixed offsets
+#     (see j2/j3/j5 origins in the URDF). Recommended default.
+#   - link_lengths: do NOT use kinematics_method/ik_method "analytical" with
+#     this robot - its l7=0.18 wrist offset makes the wrist non-spherical,
+#     and the analytical IK's shoulder-offset derivation requires l7=0.
+#     Verified round-trip error on this exact config was ~0.3 (unusable).
+#     Use fusybots_six_dof_spherical_wrist.yaml (l7=0) instead if you want "analytical".
+kinematics:
+  urdf_path: "package://robot_description/urdf/fusybots_six_dof.urdf.xacro"
+  start_link: "base_link"
+  end_link: "ee_link"
+  link_lengths: {l1: 0.2, d2: 0.01, l3: 0.3, l5: 0.32, l6: 0.25, l7: 0.18, le: 0.10}
