@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>mujoco_digital_twin</name>
+  <version>0.0.0</version>
+  <description>MuJoCo-simulated digital twin: a standalone ROS2 Python node that subscribes /hw_command and publishes /hw_status with real physics (via MuJoCo), as a drop-in replacement for hw_interface_node's ROS contract when you want simulated dynamics instead of hw_interface's kinematic dummy backends. Requires the `mujoco` pip package (not a rosdep/apt dependency - see README).</description>
+  <maintainer email="karansspk@gmail.com">karan</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>custom_robot_msgs</depend>
+  <depend>ament_index_python</depend>
+  <depend>python3-yaml</depend>
+  <exec_depend>robot_description</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
