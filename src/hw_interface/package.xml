@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>hw_interface</name>
+  <version>0.0.0</version>
+  <description>Real-hardware IRobotInterface backends (DummyHardwareInterface, ArduinoHardwareInterface) plus hw_interface_node, the ROS boundary that reads system_config.yaml's backend_mode to run against hardware, a digital twin, or both at once behind the same hw_command/hw_status topics.</description>
+  <maintainer email="karansspk@gmail.com">karan</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>eigen</depend>
+  <depend>yaml-cpp</depend>
+  <depend>rclcpp</depend>
+  <depend>ament_index_cpp</depend>
+  <depend>custom_robot_msgs</depend>
+  <depend>robot_config</depend>
+  <depend>math_utils</depend>
+  <depend>robot_hw_interface</depend>
+  <depend>digital_twin</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

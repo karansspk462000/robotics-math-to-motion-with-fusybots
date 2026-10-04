@@ -1,0 +1,108 @@
+# High-level, robot-agnostic config: which strategy to use at each pipeline
+# stage, which control mode to command, and which low-level robot
+# description file to load. Swap robot_description_file to point at a
+# different robots/*.yaml (e.g. a humanoid limb) without touching any code.
+robot_description_file: "robots/fusybots_six_dof_spherical_wrist.yaml"
+
+kinematics_method: "analytical"           # analytical | kdl | poe | pinocchio
+ik_method: "analytical"                   # analytical | kdl
+path_planner_method: "rrt_star"    # rrt_star only - joint-space only (see
+                                    # path_planner::RrtStarPathPlanner); the
+                                    # collision checker defaults to "always
+                                    # valid" until a real obstacle/scene model
+                                    # exists in this workspace
+path_interpolator_method: "linear"            # used for joint-space targets
+cartesian_path_interpolator_method: "linear_cartesian"  # used for Cartesian targets
+
+# trajectory_planner never synthesizes a new position - it only picks
+# already-existing points from these interpolators' dense output at the
+# right time. If this is too low relative to how long/slow your moves get,
+# motion will visibly stair-step (position frozen for many samples, then a
+# jump) with a velocity signal that doesn't match that stair-stepped
+# position. There's no way to guarantee sufficiency for every possible
+# move (the trajectory's duration isn't known until after interpolation
+# runs), so this needs to be generous for how slow/long your moves get.
+path_interpolator_points_per_segment: 1000
+cartesian_path_interpolator_points_per_segment: 1000
+trajectory_planner_method: "trapezoidal"
+control_mode: "position"           # position | velocity | torque
+
+# ROS topic names used by robot_node. Rename a topic here, not in
+# code - every publisher/subscription is created from these at startup.
+topics:
+  hw_status: "/hw_status"
+  user_command: "/user_command"
+  hw_command: "/hw_command"
+  digital_twin_status: "/digital_twin_status"   # only published when backend.mode is "both"
+  motion_status: "/motion_status"               # joint state + Cartesian pose, for UIs/monitoring
+
+# Read by hw_interface_node (not robot_node): which robot
+# backend(s) it talks to, and each backend's own parameters. mode: "both"
+# sends the exact same command to hardware_method and digital_twin_method
+# every cycle (see robot_hw_interface::DualRobotInterface) and reports
+# hardware's state as ground truth - useful for validating the digital
+# twin against real hardware without ever letting them drift apart.
+backend:
+  mode: "digital_twin"              # hardware | digital_twin | both
+  hardware_method: "dummy"          # dummy | arduino
+  hardware_params:
+    serial_port: "/dev/ttyACM0"
+    baud_rate: 115200
+  # dummy | pybullet | mujoco | gazebo. "dummy" runs inside hw_interface_node
+  # (digital_twin_factory.cpp) same as always. "mujoco" is NOT read by that
+  # C++ factory (it would throw "not implemented") - it's read by
+  # state_orchestrator/launch/display_robot.launch.py instead, which
+  # launches mujoco_digital_twin_node (a separate Python process with real
+  # MuJoCo physics - see that package) in hw_interface_node's place. Only
+  # vla_manipulator has a MuJoCo model today (mujoco_digital_twin/models/).
+  # pybullet/gazebo remain unimplemented either way.
+  digital_twin_method: "dummy"
+  digital_twin_params:
+    max_joint_speed: 2.0
+
+# All periodic rates in the runtime pipeline, centralized here so they can be
+# tuned together instead of hunting through per-node hardcoded literals.
+# hw_status_publish_rate_hz and state_machine_poll_rate_hz should stay fast
+# (they gate how quickly a lost hardware link is noticed); trajectory
+# calculation can be slower, but trajectory_playback_rate_hz doubles as BOTH
+# robot_node's /hw_command publish rate AND (as 1/rate) the trajectory
+# generator's own sample time_step - these two must always be the same value,
+# or real-world playback speed silently drifts from the commanded
+# max_velocity/max_acceleration (motion visibly speeds up or slows down
+# relative to what was requested). Keeping them as one field instead of two
+# makes that drift structurally impossible rather than something to remember.
+timing:
+  # How often hw_interface_node/mujoco_digital_twin_node poll the backend and
+  # publish hw_status/digital_twin_status. Lower this if a Python subscriber
+  # (e.g. robot_ui) feels laggy - each callback competes with its GUI event
+  # loop for the GIL, and 100 Hz is far more than a human needs to see anyway.
+  hw_status_publish_rate_hz: 100.0
+  # robot_node's /hw_command publish rate, and the trajectory generator's
+  # sample spacing (time_step = 1 / this rate). See note above - do not split
+  # these into two separate fields.
+  trajectory_playback_rate_hz: 100.0
+  # robot_node's hw_status-staleness check rate - independent of playback,
+  # just needs to be fast enough to catch a lost hw link quickly.
+  state_machine_poll_rate_hz: 10.0
+  # mujoco_digital_twin_node's physics step size (simulation fidelity, not
+  # ROS message timing) - overrides the MJCF's own <option timestep="...">.
+  mujoco_physics_timestep_sec: 0.002
+
+# Read by robot_node's RobotStateMachine.
+state_machine:
+  # If no /hw_status arrives for this long, the state machine considers the
+  # hardware link lost: it stops advancing any in-progress trajectory and
+  # instead continuously commands holding the last known good position,
+  # until /hw_status resumes.
+  hw_status_timeout_sec: 0.5
+  # In backend.mode "both", warn (not fault) when |hw_status - digital_twin_status|
+  # (max over joints, radians) exceeds this.
+  divergence_warn_threshold: 0.05
+
+# UI-only convenience defaults (not read by any C++ node): when a command's
+# planning_method is "velocity" or "acceleration", the UI fills in the
+# *other* constraint from here rather than asking the operator for both
+# every time; "time" mode derives both from the requested duration.
+motion_defaults:
+  default_velocity: 1.0        # rad/s
+  default_acceleration: 1.0    # rad/s^2

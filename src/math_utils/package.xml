@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>math_utils</name>
+  <version>0.0.0</version>
+  <description>Header-only math/conversion helpers (Eigen/std::vector, Eigen/KDL, pose packing, quaternion normalization) shared across packages so this math is written once instead of re-derived in each consumer. Purely generic linear-algebra/conversion code - no robot-domain knowledge (joint limits, topics, etc.) belongs here.</description>
+  <maintainer email="karansspk@gmail.com">karan</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>eigen</depend>
+  <depend>orocos_kdl</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

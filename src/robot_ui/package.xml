@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>robot_ui</name>
+  <version>0.0.0</version>
+  <description>Tkinter (ttkbootstrap) teleop/monitor UI: sends UserCommand targets (joint or Cartesian, with velocity/acceleration/time planning) and displays live hw_status/motion_status/digital_twin_status. Reads system_config.yaml directly, so it auto-adapts to whichever robot (DOF count, joint limits, topic names) is configured.</description>
+  <maintainer email="karansspk@gmail.com">karan</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>custom_robot_msgs</depend>
+  <depend>ament_index_python</depend>
+  <depend>python3-yaml</depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

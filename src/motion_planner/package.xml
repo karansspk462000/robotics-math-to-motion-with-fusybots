@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>motion_planner</name>
+  <version>0.0.0</version>
+  <description>Pure C++ motion planning core (no ROS dependency). Composes kinematics, path_planner, path_interpolator, and trajectory_planner strategies.</description>
+  <maintainer email="karansspk@gmail.com">karan</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>eigen</depend>
+  <depend>kinematics</depend>
+  <depend>path_planner</depend>
+  <depend>path_interpolator</depend>
+  <depend>trajectory_planner</depend>
+  <depend>math_utils</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
