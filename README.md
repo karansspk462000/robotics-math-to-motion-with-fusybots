@@ -49,10 +49,10 @@ can be swapped independently.
 | `robot_hw_interface` | `IRobotInterface` + `DualRobotInterface` (composite: mirrors commands to hardware + digital twin) |
 | `hw_interface` | ROS boundary node publishing `/hw_status`, consuming `/hw_command`, backed by a hardware/dummy strategy |
 | `digital_twin` | Kinematic-only C++ digital twin backend (see `mujoco_digital_twin` for the physics-accurate Python alternative) |
-| `mujoco_digital_twin` | Real MuJoCo-physics digital twin, drop-in alternative to `hw_interface_node` |
+| `mujoco_digital_twin` | Real MuJoCo-physics digital twin, drop-in alternative to `hw_interface_node` - no MJCF model ships with this repo yet for any robot, see that package's `main.py` for the expected format and path |
 | `state_orchestrator` | `robot_node` (ROS orchestrator: subscriptions/publishers/timers, drives `MotionPlanner`, owns `RobotStateMachine`), `state_manager/` (readiness/fault tracking), `visualization/` (`/hw_status` -> `/joint_states` bridge for RViz) |
 | `robot_config` | Loads `system_config.yaml` (which strategy per stage, topic names, timing, robot description file) into a typed `SystemConfig` |
-| `robot_description`, `dynamics`, `mesh_align_tool` | URDF/meshes, dynamics utilities, mesh alignment tooling |
+| `robot_description`, `dynamics` | URDF/meshes, dynamics utilities |
 | `math_utils` | Shared Eigen/KDL/pose/quaternion conversion helpers - purely generic math, no robot-domain knowledge (renamed from `robot_utils`, since that's all it ever contained) |
 | `robot_ui` | Tkinter teleop UI |
 | `integration_tests` | gtest suites, one file per architectural area (see below) |
