@@ -44,10 +44,10 @@ def _model_path(robot_name: str) -> str:
     template_path = os.path.join(mujoco_twin_share, "models", f"{robot_name}.xml")
     if not os.path.isfile(template_path):
         raise FileNotFoundError(
-            f"No MuJoCo model for robot '{robot_name}' at {template_path} - this package only "
-            f"ships models/vla_manipulator.xml today; add a new one there (and see that file's "
-            f"header comment for how it was generated) before using this backend with another "
-            f"robot.")
+            f"No MuJoCo model for robot '{robot_name}' at {template_path} - this package "
+            f"doesn't ship a MuJoCo model for any robot yet, so one must be added under "
+            f"models/{robot_name}.xml (with the same <compiler meshdir=\"{MESH_DIR_PLACEHOLDER}\"> "
+            f"placeholder this function substitutes at runtime) before this backend can be used.")
 
     with open(template_path) as f:
         xml = f.read()
