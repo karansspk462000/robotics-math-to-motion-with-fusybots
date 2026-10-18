@@ -1,8 +1,7 @@
 #pragma once
 
 // Shared kinematics_params builders for the robot used across test files -
-// fusybots_six_dof_spherical_wrist's own KDL/analytical params, plus vla_manipulator's KDL
-// params for its own home-position regression.
+// fusybots_six_dof_spherical_wrist's own KDL/analytical params.
 #include <yaml-cpp/yaml.h>
 
 namespace test_helpers {
@@ -10,14 +9,6 @@ namespace test_helpers {
 inline YAML::Node kdlParams() {
     YAML::Node params;
     params["urdf_path"] = "package://robot_description/urdf/fusybots_six_dof_spherical_wrist.urdf.xacro";
-    params["start_link"] = "base_link";
-    params["end_link"] = "ee_link";
-    return params;
-}
-
-inline YAML::Node vlaManipulatorKdlParams() {
-    YAML::Node params;
-    params["urdf_path"] = "package://robot_description/urdf/vla_manipulator.urdf.xacro";
     params["start_link"] = "base_link";
     params["end_link"] = "ee_link";
     return params;

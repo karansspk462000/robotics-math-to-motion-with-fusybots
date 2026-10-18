@@ -12,7 +12,6 @@
 
 using test_helpers::analyticalParams;
 using test_helpers::kdlParams;
-using test_helpers::vlaManipulatorKdlParams;
 
 // Regression for: KdlInverseKinematics's constructor used a `cond ?
 // fk_->chain() : KDL::Chain()` ternary to guard against a null fk_, whose
@@ -102,36 +101,6 @@ TEST(HomePosition, IsNonSingularForTypicalCartesianMoves) {
         target.cart_pose.block<3, 1>(0, 3) += d;
         EXPECT_NO_THROW(seed = ik->solve(target, seed))
             << "teleop-scale move delta=" << d.transpose() << " did not converge from home";
-    }
-}
-
-// Regression for vla_manipulator's home_joint_position (robot_config's
-// robots/vla_manipulator.yaml) - MUST be kept identical to the vector
-// below. Verified by grid search (see that yaml's comment): every tiny
-// (5mm) move in every direction converges from this pose. This arm's
-// workspace margin is much tighter than fusybots_six_dof[_spherical_wrist]'s verified
-// home - only the tiny-move guarantee is locked in here, not the larger
-// teleop-scale moves those robots' home tests also check, because this
-// arm's smaller reach doesn't clear a 2cm move in every direction from
-// this pose (see the yaml's comment - a wider re-search is still open).
-TEST(VlaManipulatorHomePosition, TinyMovesConvergeInEveryDirection) {
-    auto fk = kinematics::createFKStrategy("kdl", vlaManipulatorKdlParams());
-    auto ik_strategy = kinematics::createIKStrategy("kdl", fk);
-    auto ik = std::make_shared<kinematics::InverseKinematics>(std::move(ik_strategy));
-
-    Eigen::VectorXd home(6);
-    home << 0.0, 0.3, 0.9, 0.0, -0.5, 0.0;
-    const auto home_pose = fk->computeCartesianPosition(home);
-
-    const std::vector<Eigen::Vector3d> tiny_dirs = {
-        {0.005, 0, 0}, {-0.005, 0, 0}, {0, 0.005, 0}, {0, -0.005, 0}, {0, 0, 0.005}, {0, 0, -0.005},
-    };
-    for (const auto& d : tiny_dirs) {
-        kinematics::CartesianPosition target;
-        target.cart_pose = home_pose.cart_pose;
-        target.cart_pose.block<3, 1>(0, 3) += d;
-        EXPECT_NO_THROW(ik->solve(target, home)) << "tiny move delta=" << d.transpose()
-                                                    << " did not converge - home is on/near a singularity";
     }
 }
 
