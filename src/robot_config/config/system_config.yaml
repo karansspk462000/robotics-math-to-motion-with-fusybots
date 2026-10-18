@@ -53,8 +53,10 @@ backend:
   # C++ factory (it would throw "not implemented") - it's read by
   # state_orchestrator/launch/display_robot.launch.py instead, which
   # launches mujoco_digital_twin_node (a separate Python process with real
-  # MuJoCo physics - see that package) in hw_interface_node's place. Only
-  # vla_manipulator has a MuJoCo model today (mujoco_digital_twin/models/).
+  # MuJoCo physics - see that package) in hw_interface_node's place. No
+  # MuJoCo model ships with this repo yet for any robot - add one under
+  # mujoco_digital_twin/models/<robot_name>.xml (see that package's
+  # main.py for how the model path is resolved) before using this backend.
   # pybullet/gazebo remain unimplemented either way.
   digital_twin_method: "dummy"
   digital_twin_params:
